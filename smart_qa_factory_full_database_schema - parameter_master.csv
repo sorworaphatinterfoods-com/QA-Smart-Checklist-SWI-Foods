@@ -1,0 +1,23 @@
+Parameter_ID,Parameter,Parameter_Category,Min_Spec,Max_Spec
+PR0001,อุณหภูมิแกนกลางวัตถุดิบ,Measuring,0 °C,7 °C
+PR0002,อุณหภูมิห้องแช่เย็น,Measuring,-4 °C,6 °C
+PR0003,อุณหภูมิห้องผลิต,Measuring,10 °C,18 °C
+PR0004,อุณหภูมิก่อนลดขนาด,Measuring,0 °C,4 °C
+PR0005,อุณหภูมิหลังนวดผสม,Measuring,0 °C,5 °C
+PR0006,อุณหภูมิวัตถุดิบบน Hopper,Measuring,-4 °C,0 °C
+PR0007,อุณหภูมิห้องแช่แข็ง,Measuring,<= -18 °C,
+PR0008,อุณหภูมิแกนกลางสินค้าแช่แข็ง,Measuring,<= -15 °C,
+PR0009,อุณหภูมิรถขนส่ง (เฉพาะกลุ่ม RM),Measuring,0 °C,4 °C
+PR0010,น้ำหนัก/ไม้,Measuring,Base on Product Specification,
+PR0011,จำนวนไม้,Visual,Base on Product Specification,
+PR0012,น้ำหนักรวม,Measuring,Base on Product Specification,
+PR0013,การตรวจจับสิ่งแปลกปลอม,Testing,,
+PR0014,ความสมบูรณ์ของรอยซีล,Visual,,
+PR0015,ความถูกต้อง และครบถ้วนของฉลาก,Visual,,
+PR0016,บรรจุภัณฑ์,Visual,,
+PR0017,สิ่งแปลกปลอม,Visual,,
+PR0018,"สี , กลิ่น , เนื้อสัมผัส",Visual,,
+PR0019,เอกสาร,Visual,,
+PR0020,ค่า pH รับเข้าเนื้อสัตว์,Measuring,5.5,6.2
+PR0021,Swab Test พื้นผิว / อุปกรณ์,Testing,,
+PR0022,TPC / E.Coli / Salmonella ผลตรวจเชื้อในผลิตภัณฑ์,Testing,,

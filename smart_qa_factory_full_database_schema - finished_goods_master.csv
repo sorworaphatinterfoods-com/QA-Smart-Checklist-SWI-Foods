@@ -1,0 +1,31 @@
+FG_code,FG_name,Product_Type,Storage_Temp  (°C),Shelf_life_days
+FG - ม002,หมูปิ้งนมสดเสียบไม้ - Size L,Pork Marinated,-18.0,365
+FG - ม003,หมูปิ้งนมสดเสียบไม้ - Size S,Pork Marinated,-18.0,365
+FG - ม004,หมูปิ้งนมสดเสียบไม้ - พาย,Pork Marinated,-18.0,365
+FG - ม005,หมูปิ้งนมสดเสียบไม้ Size L พร้อมทาน,Pork Marinated,-18.0,365
+FG - ม006,หมูปิ้งนมสดแช่แข็ง 25 ก x 40 ไม้ x 20 แพ็ก / ลัง (MK),Pork Marinated,-18.0,365
+FG - ม007,หมูปิ้งนมสดแช่แข็ง 45 ก x 40 ไม้ x 10 แพ็ก / ลัง (GHS),Pork Marinated,-18.0,365
+FG - ม008,GHS หมูปิ้งนมสดฉลากขาว 45ก.x40ไม้x10 แพ็ก,Pork Marinated,-18.0,365
+FG - ม010,หมูแดดเดียว,Pork Marinated,-18.0,365
+FG - ม011,หมูปิ้งโบราณ Size L,Pork Marinated,-18.0,365
+FG - ม013,หมูปิ้งโบราณ Size S,Pork Marinated,-18.0,365
+FG - ม014,หมูปิ้งโบราณแช่แข็ง 16 ก x 40 ไม้ x 24 แพ็ก / ลัง (MK),Pork Marinated,-18.0,365
+FG - ม024,หมูหมักบาร์บีคิวเสียบไม้แช่แข็ง 50 ก x 30 ไม้,Pork Marinated,-18.0,365
+FG - ม025,หมูปิ้งโบราณแช่แข็ง 16 ก x 50 ไม้ ( สูตร 2 ),Pork Marinated,-18.0,365
+FG - ม026,หมูสะเต๊ะแช่แข็ง 13 ก x 50 ไม้,Pork Marinated,-18.0,365
+FG - ม027,หมูหม่าล่าแช่แข็ง 16 ก x 50 ไม้,Pork Marinated,-18.0,365
+FG - ม028,Repack หมูสะเต๊ะแช่แข็ง 30 ก x 50 ไม้,Pork Marinated,-18.0,365
+FG - ม029,Repack หมูหม่าล่าแช่แข็ง 24 ก x 50 ไม้,Pork Marinated,-18.0,365
+FG - ล001,ลูกชิ้นหมู,Meat Ball,-18.0,365
+FG - ล003,ลูกชิ้นเอ็นหมู,Meat Ball,-18.0,365
+FG - ส001,ไส้กรอกวุ้นเส้น,Esan Sausage,-18.0,365
+FG - ส002,ไส้กรอกดั้งเดิม,Esan Sausage,-18.0,365
+FG - ส003,ไส้กรอกเปรี้ยว,Esan Sausage,-18.0,365
+FG - ก001,ไก่แดงโบราณ,Chicken Marinated,-18.0,365
+FG - ก001 MPS,ไก่พริกไทยดำเสียบไม้ แพ็กละ10ไม้,Chicken Marinated,-18.0,365
+FG - ก002,ไก่พริกไทยดำ,Chicken Marinated,-18.0,365
+FG - ก003,ไก่ปิ้งนมสด,Chicken Marinated,-18.0,365
+FG - ก004,ไก่เทอริยากิ 55 ก x 50 ไม้,Chicken Marinated,-18.0,365
+FG - ก005,ไก่หม่าล่า 55 ก x 50 ไม้,Chicken Marinated,-18.0,365
+FG - ก006,ไก่บาร์บีคิว 55 ก x 40 ไม้,Chicken Marinated,-18.0,365
+FG - ข001,ข้าวเหนียว,Rice,Ambient,
