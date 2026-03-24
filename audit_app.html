@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#28a745">
+<link rel="manifest" href="manifest.json">
+<title>SMART QA FACTORY - QMS Smart App</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body{background:#f4f6f9;font-family:Segoe UI, Tahoma, Geneva, Verdana,sans-serif}
+  .navbar{background:#28a745}
+  .card{box-shadow:0 4px 8px rgba(0,0,0,0.08);border:none;margin-bottom:18px}
+  .fail{background:#ffe5e5}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-dark mb-3">
+  <div class="container"><span class="navbar-brand h5">🛡️ SMART QA FACTORY - QMS Smart App</span></div>
+</nav>
+
+<div class="container">
+  <div class="row">
+    <!-- Form -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header bg-primary text-white">📝 บันทึกผลการตรวจ</div>
+        <div class="card-body">
+          <form id="auditForm">
+            <div class="mb-2">
+              <label class="form-label">กระบวนการ</label>
+              <select id="processSelect" class="form-select" required></select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">จุดตรวจวัด (Parameter)</label>
+              <select id="parameterSelect" class="form-select" required></select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">อุปกรณ์ (Equipment)</label>
+              <select id="equipmentSelect" class="form-select"></select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">ผลการตรวจ</label>
+              <input id="resultValue" class="form-control" required placeholder="เช่น 4.0, Pass, ไม่มีสิ่งแปลกปลอม">
+            </div>
+            <div class="mb-2">
+              <label class="form-label">ผู้ตรวจสอบ</label>
+              <input id="auditorName" class="form-control" required placeholder="ชื่อพนักงาน">
+            </div>
+            <button class="btn btn-success w-100" type="submit">บันทึกข้อมูล</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table + Filters -->
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+          <span>📊 ข้อมูลการตรวจ</span>
+          <div>
+            <select id="filterProcess" class="form-select form-select-sm d-inline-block" style="width:220px"></select>
+            <select id="filterStatus" class="form-select form-select-sm d-inline-block" style="width:140px">
+              <option value="">สถานะทั้งหมด</option><option value="Pass">Pass ✅</option><option value="Fail">Fail ❌</option>
+            </select>
+            <button class="btn btn-sm btn-info text-white" onclick="exportToCSV()">📥 Export</button>
+            <button class="btn btn-sm btn-danger" onclick="clearData()">ล้าง</button>
+          </div>
+        </div>
+        <div class="card-body p-2">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+              <thead><tr><th>เวลา</th><th>Process</th><th>Parameter</th><th>Equipment</th><th>Result</th><th>Auditor</th></tr></thead>
+              <tbody id="recordTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- Utility: CSV -> JSON (simple) ---------- */
+async function fetchCSV(name){
+  try{
+    const res = await fetch(name);
+    if(!res.ok) throw new Error('Not found');
+    const txt = await res.text();
+    return csvToJson(txt);
+  }catch(e){
+    console.warn('CSV load failed', name, e);
+    return [];
+  }
+}
+function csvToJson(csv){
+  const lines = csv.split(/\r?\n/).filter(l=>l.trim()!=='');
+  if(!lines.length) return [];
+  const headers = lines[0].split(',').map(h=>h.trim());
+  return lines.slice(1).map(line=>{
+    const cols = splitCSVLine(line, headers.length);
+    const obj = {};
+    headers.forEach((h,i)=> obj[h]= (cols[i]||'').trim());
+    return obj;
+  });
+}
+function splitCSVLine(line, expected){
+  const out=[]; let cur='', inQuotes=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='\"'){ inQuotes=!inQuotes; continue; }
+    if(ch===',' && !inQuotes){ out.push(cur); cur=''; continue; }
+    cur+=ch;
+  }
+  out.push(cur);
+  while(out.length<expected) out.push('');
+  return out;
+}
+
+/* ---------- Load masters (from CSV files you provided) ---------- */
+let processes=[], parameters=[], equipments=[], procParamMap=[], ccpList=[];
+async function loadMasters(){
+  processes = await fetchCSV('process_master.csv');
+  parameters = await fetchCSV('parameter_master.csv');
+  equipments = await fetchCSV('equipment_master.csv');
+  procParamMap = await fetchCSV('process_parameter_map.csv');
+  ccpList = await fetchCSV('ccp_master.csv');
+  populateProcessSelect();
+  populateFilterProcess();
+}
+function populateProcessSelect(){
+  const sel = document.getElementById('processSelect');
+  sel.innerHTML = '<option value="">-- เลือกกระบวนการ --</option>';
+  processes.forEach(p=> sel.innerHTML += `<option value="${p.Process_ID}">${p.Process_ID} - ${p.Process_Name}</option>`);
+}
+function populateFilterProcess(){
+  const sel = document.getElementById('filterProcess');
+  sel.innerHTML = '<option value="">-- ทุกกระบวนการ --</option>';
+  processes.forEach(p=> sel.innerHTML += `<option value="${p.Process_ID}">${p.Process_ID} - ${p.Process_Name}</option>`);
+}
+
+/* ---------- When process changes, populate parameters & equipment ---------- */
+document.getElementById('processSelect').addEventListener('change', e=>{
+  const pid = e.target.value;
+  const paramSel = document.getElementById('parameterSelect');
+  const equipSel = document.getElementById('equipmentSelect');
+  paramSel.innerHTML = '<option value="">-- เลือกจุดตรวจวัด --</option>';
+  equipSel.innerHTML = '<option value="">-- (ไม่ระบุ) --</option>';
+  const rows = procParamMap.filter(r=> r.Process_ID === pid || r.Process_Name === pid);
+  rows.forEach(r=>{
+    const p = parameters.find(x=> x.Parameter_ID === r.Parameter_ID);
+    if(p) paramSel.innerHTML += `<option value="${p.Parameter_ID}">${p.Parameter_ID} - ${p.Parameter}</option>`;
+    if(r.Equipment_ID){
+      const eq = equipments.find(x=> x.Equipment_ID === r.Equipment_ID);
+      if(eq) equipSel.innerHTML += `<option value="${eq.Equipment_ID}">${eq.Equipment_ID} - ${eq.Equipment_Name}</option>`;
+    }
+  });
+});
+
+/* ---------- QC check using parameter_master Min_Spec / Max_Spec ---------- */
+function checkQC(parameterID, value){
+  const p = parameters.find(x=> x.Parameter_ID === parameterID);
+  if(!p) return true;
+  const min = (p.Min_Spec||'').replace(/[^\d\.\-]/g,'').trim();
+  const max = (p.Max_Spec||'').replace(/[^\d\.\-]/g,'').trim();
+  // If both numeric bounds exist, try numeric compare
+  const num = parseFloat(value);
+  if(min!=='' && max!=='' && !isNaN(num)){
+    const nmin = parseFloat(min), nmax = parseFloat(max);
+    return num >= nmin && num <= nmax;
+  }
+  // If only max like "<= -18" or "<= -15"
+  if((p.Min_Spec||'').includes('<=') || (p.Max_Spec||'').includes('<=') || (p.Min_Spec||'').includes('>=') || (p.Max_Spec||'').includes('>=')){
+    // crude parse: if Max_Spec contains -18 and value numeric
+    if(!isNaN(num)){
+      if((p.Max_Spec||'').includes('-') && p.Max_Spec.includes('-')) {
+        // assume must be <= max (negative)
+        const nmax = parseFloat((p.Max_Spec||'').replace(/[^\d\.\-]/g,''));
+        return num <= nmax;
+      }
+    }
+  }
+  // For text parameters (e.g., "ไม่มีสิ่งแปลกปลอม") treat "pass" or matching allowed text as pass
+  const vLower = (value||'').toLowerCase();
+  if(vLower.includes('pass') || vLower.includes('ไม่มี') || vLower.includes('ok') || vLower.includes('ผ่าน')) return true;
+  // default: cannot determine → treat as pass
+  return true;
+}
+
+/* ---------- Records handling (localStorage) ---------- */
+function loadRecords(){
+  const records = JSON.parse(localStorage.getItem('auditRecords')) || [];
+  const tbody = document.getElementById('recordTableBody');
+  tbody.innerHTML = '';
+  const fProc = document.getElementById('filterProcess').value;
+  const fStatus = document.getElementById('filterStatus').value;
+  const filtered = records.filter(r=>{
+    if(fProc && r.process !== fProc) return false;
+    const status = checkQC(r.parameter, r.result) ? 'Pass' : 'Fail';
+    if(fStatus && status !== fStatus) return false;
+    return true;
+  });
+  if(!filtered.length){ tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">ยังไม่มีข้อมูล</td></tr>'; return; }
+  filtered.forEach(r=>{
+    const isPass = checkQC(r.parameter, r.result);
+    const tr = document.createElement('tr');
+    if(!isPass) tr.classList.add('fail');
+    tr.innerHTML = `<td>${r.time}</td>
+                    <td>${r.process}</td>
+                    <td>${r.parameter}</td>
+                    <td>${r.equipment||''}</td>
+                    <td><strong>${r.result}</strong> ${isPass? '✅':'❌'}</td>
+                    <td>${r.auditor}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ---------- Form submit ---------- */
+document.getElementById('auditForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const rec = {
+    time: new Date().toLocaleString('th-TH'),
+    process: document.getElementById('processSelect').value,
+    parameter: document.getElementById('parameterSelect').value,
+    equipment: document.getElementById('equipmentSelect').value,
+    result: document.getElementById('resultValue').value.trim(),
+    auditor: document.getElementById('auditorName').value.trim()
+  };
+  const records = JSON.parse(localStorage.getItem('auditRecords')) || [];
+  records.unshift(rec);
+  localStorage.setItem('auditRecords', JSON.stringify(records));
+  e.target.reset();
+  loadRecords();
+});
+
+/* ---------- Filters ---------- */
+document.getElementById('filterProcess').addEventListener('change', loadRecords);
+document.getElementById('filterStatus').addEventListener('change', loadRecords);
+
+/* ---------- Export / Clear ---------- */
+function exportToCSV(){
+  const records = JSON.parse(localStorage.getItem('auditRecords')) || [];
+  if(!records.length) return alert('ไม่มีข้อมูลสำหรับ Export');
+  let csv = "\uFEFFเวลา,กระบวนการ,จุดตรวจวัด,อุปกรณ์,ผลการตรวจ,ผู้ตรวจสอบ,สถานะ\n";
+  records.forEach(r=>{
+    const status = checkQC(r.parameter, r.result) ? 'Pass' : 'Fail';
+    csv += `"${r.time}","${r.process}","${r.parameter}","${r.equipment||''}","${r.result}","${r.auditor}","${status}"\n`;
+  });
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `Audit_Report_${new Date().toISOString().split('T')[0]}.csv`;
+  link.click();
+}
+function clearData(){ if(confirm('ล้างข้อมูลทั้งหมด?')){ localStorage.removeItem('auditRecords'); loadRecords(); } }
+
+/* ---------- Init ---------- */
+loadMasters().then(()=> {
+  // load existing records after masters loaded
+  loadRecords();
+});
+
+/* ---------- Register SW ---------- */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').then(()=> console.log('SW registered')).catch(e=> console.warn('SW reg failed', e));
+}
+</script>
+</body>
+</html>
