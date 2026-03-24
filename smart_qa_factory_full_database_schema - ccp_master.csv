@@ -1,7 +1,0 @@
-Process_ID,Parameter_ID,Equipment_ID,CCP_ID,CCP_Name,Critical_Limit
-PC0012,PR0013,TMD001,CCP01-1,ตรวจจับสิ่งแปลกปลอม Fe,ø 1.0 mm.
-PC0012,PR0013,TMD001,CCP01-2,ตรวจจับสิ่งแปลกปลอม Non Fe,ø 1.5 mm.
-PC0012,PR0013,TMD001,CCP01-3,ตรวจจับสิ่งแปลกปลอม SUS,ø 2.0 mm.
-PC0012,PR0013,TMD002,CCP02-1,ตรวจจับสิ่งแปลกปลอม Fe,ø 1.0 mm.
-PC0012,PR0013,TMD002,CCP02-2,ตรวจจับสิ่งแปลกปลอม Non Fe,ø 1.5 mm.
-PC0012,PR0013,TMD002,CCP02-3,ตรวจจับสิ่งแปลกปลอม SUS,ø 2.0 mm.
